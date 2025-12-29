@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cogaly - AI Alzheimer's Risk Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-2: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-1);
+            padding: 60px 20px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Form Section */
+        .form-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-glow);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+        }
+
+        .submit-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-container {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-glow);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-container.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .risk-indicator {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .risk-indicator.low {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .risk-indicator.moderate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+        }
+
+        .risk-indicator.high {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .risk-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .diagnosis {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .confidence {
+            color: var(--text-secondary);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-input);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-name {
+            font-weight: 500;
+        }
+
+        .feature-impact {
+            font-size: 0.85rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .feature-impact.positive {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .feature-impact.negative {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        /* Recommendations */
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-item i {
+            color: var(--secondary);
+            margin-top: 3px;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .disclaimer i {
+            color: var(--warning);
+            font-size: 1.5rem;
+        }
+
+        .disclaimer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 20px 30px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .form-container,
+            .results-container {
+                padding: 25px;
+            }
+
+            .risk-indicator {
+                width: 140px;
+                height: 140px;
+            }
+
+            .risk-score {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>Cogaly</span>
+            </div>
+            <p class="tagline">AI-Powered Early Alzheimer's Risk Detection with Explainable Predictions</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value">94.4%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">0.948</div>
+                    <div class="stat-label">ROC-AUC</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">Features Analyzed</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Input Form -->
+        <div class="form-container">
+            <h2 class="section-title">
+                <i class="fas fa-user-md"></i>
+                Patient Assessment Form
+            </h2>
+            
+            <form id="assessmentForm">
+                <!-- Demographics -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-id-card"></i>
+                        Demographics
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="Age">Age (years)</label>
+                            <input type="number" id="Age" name="Age" min="18" max="120" value="65" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Gender">Gender</label>
+                            <select id="Gender" name="Gender" required>
+                                <option value="0">Female</option>
+                                <option value="1">Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Ethnicity">Ethnicity</label>
+                            <select id="Ethnicity" name="Ethnicity" required>
+                                <option value="0">Caucasian</option>
+                                <option value="1">African American</option>
+                                <option value="2">Asian</option>
+                                <option value="3">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="EducationLevel">Education Level</label>
+                            <select id="EducationLevel" name="EducationLevel" required>
+                                <option value="0">None</option>
+                                <option value="1">High School</option>
+                                <option value="2" selected>Bachelor's</option>
+                                <option value="3">Higher</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lifestyle -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-heartbeat"></i>
+                        Lifestyle Factors
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="BMI">BMI</label>
+                            <input type="number" id="BMI" name="BMI" min="15" max="50" step="0.1" value="25.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Smoking">Smoking</label>
+                            <select id="Smoking" name="Smoking" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="AlcoholConsumption">Alcohol (units/week)</label>
+                            <input type="number" id="AlcoholConsumption" name="AlcoholConsumption" min="0" max="20" step="0.1" value="3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="PhysicalActivity">Physical Activity (hrs/week)</label>
+                            <input type="number" id="PhysicalActivity" name="PhysicalActivity" min="0" max="10" step="0.1" value="4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="DietQuality">Diet Quality (0-10)</label>
+                            <input type="number" id="DietQuality" name="DietQuality" min="0" max="10" step="0.1" value="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="SleepQuality">Sleep Quality (4-10)</label>
+                            <input type="number" id="SleepQuality" name="SleepQuality" min="4" max="10" step="0.1" value="7" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-notes-medical"></i>
+                        Medical History
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="FamilyHistoryAlzheimers">Family History of Alzheimer's</label>
+                            <select id="FamilyHistoryAlzheimers" name="FamilyHistoryAlzheimers" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="CardiovascularDisease">Cardiovascular Disease</label>
+                            <select id="CardiovascularDisease" name="CardiovascularDisease" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Diabetes">Diabetes</label>
+                            <select id="Diabetes" name="Diabetes" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Depression">Depression</label>
+                            <select id="Depression" name="Depression" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="HeadInjury">Head Injury History</label>
+                            <select id="HeadInjury" name="HeadInjury" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Hypertension">Hypertension</label>
+                            <select id="Hypertension" name="Hypertension" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Measurements -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-stethoscope"></i>
+                        Clinical Measurements
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="SystolicBP">Systolic BP (mmHg)</label>
+                            <input type="number" id="SystolicBP" name="SystolicBP" min="90" max="180" value="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="DiastolicBP">Diastolic BP (mmHg)</label>
+                            <input type="number" id="DiastolicBP" name="DiastolicBP" min="60" max="120" value="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="CholesterolTotal">Total Cholesterol (mg/dL)</label>
+                            <input type="number" id="CholesterolTotal" name="CholesterolTotal" min="150" max="300" value="200" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="CholesterolLDL">LDL Cholesterol (mg/dL)</label>
+                            <input type="number" id="CholesterolLDL" name="CholesterolLDL" min="50" max="200" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="CholesterolHDL">HDL Cholesterol (mg/dL)</label>
+                            <input type="number" id="CholesterolHDL" name="CholesterolHDL" min="20" max="100" value="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="CholesterolTriglycerides">Triglycerides (mg/dL)</label>
+                            <input type="number" id="CholesterolTriglycerides" name="CholesterolTriglycerides" min="50" max="400" value="150" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cognitive Assessment -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-brain"></i>
+                        Cognitive Assessment
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="MMSE">MMSE Score (0-30)</label>
+                            <input type="number" id="MMSE" name="MMSE" min="0" max="30" value="28" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="FunctionalAssessment">Functional Assessment (0-10)</label>
+                            <input type="number" id="FunctionalAssessment" name="FunctionalAssessment" min="0" max="10" step="0.1" value="8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ADL">ADL Score (0-10)</label>
+                            <input type="number" id="ADL" name="ADL" min="0" max="10" step="0.1" value="8" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Behavioral Indicators -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fas fa-user-check"></i>
+                        Behavioral Indicators
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="MemoryComplaints">Memory Complaints</label>
+                            <select id="MemoryComplaints" name="MemoryComplaints" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="BehavioralProblems">Behavioral Problems</label>
+                            <select id="BehavioralProblems" name="BehavioralProblems" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Confusion">Confusion</label>
+                            <select id="Confusion" name="Confusion" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Disorientation">Disorientation</label>
+                            <select id="Disorientation" name="Disorientation" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="PersonalityChanges">Personality Changes</label>
+                            <select id="PersonalityChanges" name="PersonalityChanges" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="DifficultyCompletingTasks">Difficulty Completing Tasks</label>
+                            <select id="DifficultyCompletingTasks" name="DifficultyCompletingTasks" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Forgetfulness">Forgetfulness</label>
+                            <select id="Forgetfulness" name="Forgetfulness" required>
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-search"></i>
+                    Analyze Risk
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-container" id="results">
+            <div class="result-header">
+                <div class="risk-indicator" id="riskIndicator">
+                    <div class="risk-score" id="riskScore">0%</div>
+                    <div class="risk-label" id="riskLabel">Risk Level</div>
+                </div>
+                <h2 class="diagnosis" id="diagnosis">Analyzing...</h2>
+                <p class="confidence" id="confidence">Confidence: --</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Top Contributing Features -->
+                <div class="feature-card">
+                    <h3><i class="fas fa-chart-bar"></i> Top Contributing Factors</h3>
+                    <div id="topFeatures"></div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="feature-card">
+                    <h3><i class="fas fa-lightbulb"></i> Recommendations</h3>
+                    <div id="recommendations"></div>
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Important Disclaimer</strong>
+                    <p>This tool is for educational and research purposes only. It is NOT a medical diagnostic tool and should NOT be used for clinical decision-making. Always consult qualified healthcare professionals for medical advice and diagnosis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>
+            <strong>Cogaly</strong> - AI 4 Alzheimer's Hackathon Submission<br>
+            Built with <i class="fas fa-heart" style="color: #ef4444;"></i> using XGBoost + SHAP<br>
+            <a href="https://github.com/andamagodwin/cogaly-observability" target="_blank">
+                <i class="fab fa-github"></i> View on GitHub
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('assessmentForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultsContainer = document.getElementById('results');
+
+        // API Base URL - change this for production
+        const API_URL = window.location.origin;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Analyzing...';
+            submitBtn.disabled = true;
+
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                // Convert to appropriate types
+                if (['Gender', 'Ethnicity', 'EducationLevel', 'Smoking', 'FamilyHistoryAlzheimers', 
+                     'CardiovascularDisease', 'Diabetes', 'Depression', 'HeadInjury', 'Hypertension',
+                     'MemoryComplaints', 'BehavioralProblems', 'Confusion', 'Disorientation',
+                     'PersonalityChanges', 'DifficultyCompletingTasks', 'Forgetfulness'].includes(key)) {
+                    data[key] = parseInt(value);
+                } else {
+                    data[key] = parseFloat(value);
+                }
+            });
+
+            try {
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+
+                const result = await response.json();
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error making prediction. Please ensure the API server is running.');
+            } finally {
+                // Reset button state
+                submitBtn.classList.remove('loading');
+                submitBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Risk';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function displayResults(result) {
+            // Show results container
+            resultsContainer.classList.add('show');
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+
+            // Update risk indicator
+            const riskIndicator = document.getElementById('riskIndicator');
+            const riskScore = document.getElementById('riskScore');
+            const riskLabel = document.getElementById('riskLabel');
+            const diagnosis = document.getElementById('diagnosis');
+            const confidence = document.getElementById('confidence');
+
+            // Set risk level styling
+            riskIndicator.className = 'risk-indicator ' + result.risk_level.toLowerCase();
+            riskScore.textContent = (result.risk_score * 100).toFixed(1) + '%';
+            riskLabel.textContent = result.risk_level + ' Risk';
+            diagnosis.textContent = result.diagnosis;
+            confidence.textContent = `Model Confidence: ${result.confidence.toFixed(1)}%`;
+
+            // Display top features
+            const topFeaturesEl = document.getElementById('topFeatures');
+            topFeaturesEl.innerHTML = result.top_features.map(feature => `
+                <div class="feature-item">
+                    <span class="feature-name">${formatFeatureName(feature.feature)}</span>
+                    <span class="feature-impact ${feature.shap_value > 0 ? 'positive' : 'negative'}">
+                        ${feature.impact}
+                    </span>
+                </div>
+            `).join('');
+
+            // Display recommendations
+            const recommendationsEl = document.getElementById('recommendations');
+            recommendationsEl.innerHTML = result.recommendations.map(rec => `
+                <div class="recommendation-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${rec}</span>
+                </div>
+            `).join('');
+        }
+
+        function formatFeatureName(name) {
+            // Convert camelCase to Title Case with spaces
+            return name
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase())
+                .trim();
+        }
+    </script>
+</body>
+</html>
