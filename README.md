@@ -1,15 +1,14 @@
 # Cogaly Observability
 
-**Cogaly Observability** is a healthcare-focused AI observability and safety monitoring system built for the Datadog × Google Cloud hackathon. The project demonstrates how to design **end-to-end observability for an LLM-powered medical AI application**, with a specific focus on *early Alzheimer’s risk assessment*.
+**Cogaly Observability** is a healthcare-focused AI observability and safety monitoring system built for the **AI 4 Alzheimer's Hackathon**. The project demonstrates how to design **end-to-end observability for medical AI applications**, with a specific focus on *early Alzheimer’s risk assessment*.
 
-Rather than optimizing for raw medical accuracy, Cogaly focuses on a critical and often overlooked problem: **LLMs and ML models can fail silently**. In healthcare, these silent failures—such as confidence collapse, data drift, or explanation instability—can have serious consequences.
+Rather than optimizing for raw medical accuracy, Cogaly focuses on a critical and often overlooked problem: **ML models can fail silently**. In healthcare, these silent failures—such as confidence collapse, data drift, or explanation instability—can have serious consequences.
 
 Cogaly combines:
-- A **structured Alzheimer’s risk model** trained on synthetic clinical data
-- An **LLM reasoning layer powered by Gemini on Vertex AI** for natural language explanations
-- **Datadog observability** to monitor runtime health, model quality signals, and safety indicators
+- A **structured Alzheimer’s risk model** trained on synthetic clinical data (XGBoost + SHAP)
+- **Datadog observability** to monitor runtime health, model quality signals, and safety indicators in real-time
 
-This repository contains the full, reproducible implementation of Cogaly, including model training, application code, Datadog configurations, traffic generation, and deployment instructions.
+This repository contains the full, reproducible implementation of Cogaly, including model training, application code, Datadog configurations, and deployment instructions for Render.
 
 ---
 
@@ -28,21 +27,18 @@ The system is designed to answer one key question:
 ## 🧠 System Architecture
 
 ```
-User Input (Structured + Text)
+User Input (Structured Data)
         ↓
 Cogaly Core Model (Tabular ML Risk Scoring)
         ↓
-Gemini (Vertex AI) – LLM Reasoning & Explanation
-        ↓
-API Response
+API Response (Risk Score + SHAP Explanation)
         ↓
 Telemetry → Datadog (Metrics, Logs, Events, Incidents)
 ```
 
 ### Key Components
-- **Cogaly Core Model**: A machine learning model trained on structured Alzheimer’s-related clinical and lifestyle data. Outputs a risk score and confidence signals.
-- **LLM Layer (Gemini)**: Generates natural-language explanations of model outputs while explicitly expressing uncertainty and avoiding diagnostic claims.
-- **Observability Layer (Datadog)**: Captures runtime metrics, LLM behavior, quality signals, and safety indicators, and triggers actionable incidents.
+- **Cogaly Core Model**: A machine learning model (XGBoost) trained on structured Alzheimer’s-related clinical and lifestyle data. Outputs a risk score, confidence signals, and SHAP-based feature importance.
+- **Observability Layer (Datadog)**: Captures runtime metrics, quality signals, and safety indicators, and triggers actionable incidents when risk thresholds are breached.
 
 ---
 
@@ -54,7 +50,8 @@ Cogaly is trained on a **synthetic Alzheimer’s Disease dataset** containing de
 - **License**: CC BY 4.0
 - **Nature**: Fully synthetic (no real patient data)
 
-This dataset is suitable for educational and research purposes and avoids ethical risks associated with real patient information.
+*Note: This project uses a public dataset for demonstration purposes.* 
+**Hackathon Dataset**: https://drive.google.com/drive/folders/1jGfWOHuA3kSbOQ4y26TI_ogBtDetw1SW
 
 > ⚠️ **Disclaimer**: This project is a research and observability prototype. It is **not a diagnostic tool** and must not be used for clinical decision-making.
 
@@ -82,20 +79,7 @@ These signals are intentionally simple yet expressive, enabling downstream detec
 
 ---
 
-## 🤖 LLM Integration (Gemini on Vertex AI)
 
-Cogaly uses **Gemini via Vertex AI** as the LLM reasoning layer. The LLM:
-- Converts structured risk outputs into clinician-friendly explanations
-- Highlights uncertainty and limitations
-- Avoids medical diagnosis language
-
-### Why Gemini?
-- Fully compliant with hackathon requirements
-- Reliable token-level telemetry
-- Strong reasoning and summarization capabilities
-- Cost-efficient for limited cloud credits
-
----
 
 ## 📊 Observability Strategy (Datadog)
 
@@ -114,7 +98,7 @@ Cogaly treats observability as a first-class feature.
 At least three Datadog monitors are defined, including:
 1. High Alzheimer’s risk predictions with low model confidence
 2. Sustained confidence degradation over time
-3. Abnormal LLM token usage or explanation instability
+3. Anomalous input patterns indicating drift
 
 Each detection rule automatically creates an **actionable incident** in Datadog with contextual information and suggested remediation steps.
 
@@ -467,6 +451,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
+- **AI 4 Alzheimer's Hackathon** organizers for the opportunity
+- **Hack4Health** for democratizing computational medicine
 - XGBoost developers for the excellent gradient boosting library
 - SHAP library for making AI interpretable
 - Scikit-learn for comprehensive ML tools
@@ -503,8 +489,8 @@ For questions or support, please open an issue on GitHub.
 ## ☁️ Deployment
 
 - **Application Hosting**: Render.com (via `render.yaml`)
+- **Application Hosting**: Render.com (via `render.yaml`)
 - **Model Hosting**: Included in application container
-- **LLM**: Gemini (Vertex AI)
 - **Observability**: Datadog (full access via GitHub Student Pack)
 
 Detailed deployment instructions are provided in the `deploy/` directory.
@@ -548,5 +534,5 @@ This project is open-source and released under an OSI-approved license. See the 
 
 Cogaly is not about building the most accurate medical model—it is about building **safe, observable, and responsible AI systems**. In domains like healthcare, observability is not optional; it is essential.
 
-This project demonstrates how Datadog and Google Cloud can be combined to make AI systems transparent, accountable, and operationally safe.
+This project demonstrates how Datadog can be used to make AI systems transparent, accountable, and operationally safe.
 
