@@ -22,6 +22,8 @@ import pickle
 import pandas as pd
 import numpy as np
 import os
+from ddtrace import tracer, patch_all
+patch_all()
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -296,6 +298,16 @@ async def predict(patient: PatientData):
         probability = model.predict_proba(patient_scaled)[0]
         risk_score = float(probability[1])
         confidence = float(max(probability) * 100)
+        
+        # Datadog Observability: Tag the current span with model metrics
+        current_span = tracer.current_span()
+        if current_span:
+            current_span.set_tag('model.risk_score', risk_score)
+            current_span.set_tag('model.confidence', confidence)
+            current_span.set_tag('model.diagnosis', str(prediction))
+            # Tag key input features for drift monitoring
+            current_span.set_tag('patient.age', patient.Age)
+            current_span.set_tag('patient.mmse', patient.MMSE)
         
         # Get SHAP values for explainability
         shap_values = explainer.shap_values(patient_scaled)

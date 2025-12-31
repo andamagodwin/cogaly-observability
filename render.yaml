@@ -10,3 +10,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: DD_SERVICE
+        value: cogaly-app
+      - key: DD_ENV
+        value: production
+      - key: DD_LOGS_INJECTION
+        value: "true"
+      - key: DD_TRACE_ENABLED
+        value: "true"

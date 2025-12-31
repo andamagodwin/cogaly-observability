@@ -8,3 +8,4 @@ scikit-learn>=1.2.0
 xgboost>=1.7.0
 shap>=0.41.0
 python-multipart>=0.0.6
+ddtrace>=2.0.0
