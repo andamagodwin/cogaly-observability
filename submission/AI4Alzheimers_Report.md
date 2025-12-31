@@ -25,7 +25,12 @@ Current clinical diagnosis of Alzheimer's often occurs late in disease progressi
 
 ### 1.3 Our Solution: Cogaly
 
-**Cogaly** is an XGBoost-based machine learning system that predicts Alzheimer's risk using 32 clinical, demographic, and lifestyle features. The model integrates **SHAP (SHapley Additive exPlanations)** to provide interpretable predictions, enabling clinicians to understand *why* a patient is flagged as at-risk.
+**Cogaly** is an XGBoost-based machine learning system that predicts Alzheimer's risk using 32 clinical, demographic, and lifestyle features.
+
+Unlike traditional models, Cogaly prioritizes **Safety and Observability**. It integrates:
+1.  **SHAP (SHapley Additive exPlanations)** for per-prediction interpretability.
+2.  **Datadog Observability** for real-time monitoring of model confidence, drift, and operational health.
+3.  **Cloud Native Deployment** on Render for continuous delivery.
 
 ---
 
@@ -92,6 +97,19 @@ For each prediction, we compute SHAP values that show:
 
 This transparency is essential for clinical adoption and regulatory compliance.
 
+### 2.5 Observability & Deployment
+
+**Deployment Architecture:**
+- **Platform:** Render (PaaS)
+- **Container:** Dockerized Python 3.11 Environment
+- **API:** FastAPI (Asynchronous inference)
+
+**Observability (Datadog):**
+We implemented a "Safety Layer" using Datadog to detect silent model failures:
+- **Confidence Monitoring:** Alerts if average prediction confidence drops below 75%.
+- **Latency Tracking:** Ensures predictions are delivered <200ms.
+- **Drift Detection:** Monitors distribution of key features (e.g., Age, MMSE) for deviations from training data.
+
 ---
 
 ## 3. Evaluation
@@ -146,7 +164,8 @@ The notebook includes:
 
 1. **High-Performance Model:** 94.42% accuracy with strong recall for early detection
 2. **Interpretable Predictions:** SHAP integration provides transparent, clinician-friendly explanations
-3. **Reproducible Pipeline:** Complete, well-documented notebook for easy replication
+3. **Safe & Observable:** Integrated Datadog monitoring to detect drift and confidence collapse
+4. **Reproducible Pipeline:** Complete, well-documented notebook and automated Render deployment
 
 ### 4.2 Limitations
 
