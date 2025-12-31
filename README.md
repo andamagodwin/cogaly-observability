@@ -502,12 +502,18 @@ For questions or support, please open an issue on GitHub.
 
 ## ☁️ Deployment
 
-- **Model Hosting**: Google Cloud Vertex AI
+- **Application Hosting**: Render.com (via `render.yaml`)
+- **Model Hosting**: Included in application container
 - **LLM**: Gemini (Vertex AI)
-- **Application**: Python (FastAPI or Flask)
 - **Observability**: Datadog (full access via GitHub Student Pack)
 
 Detailed deployment instructions are provided in the `deploy/` directory.
+
+### Deploy to Render
+1. Create a [Render](https://render.com) account.
+2. Click **New +** -> **Blueprint**.
+3. Connect your GitHub repository.
+4. Render will automatically detect `render.yaml` and start deployment.
 
 ---
 
