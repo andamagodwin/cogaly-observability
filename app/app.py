@@ -43,29 +43,62 @@ app.add_middleware(
 # Load Model Artifacts
 # ============================================================================
 
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "model")
+def get_model_dir():
+    """Find the model directory - works on both local and Azure"""
+    possible_paths = [
+        # Local development (running from app/ directory)
+        os.path.join(os.path.dirname(__file__), "..", "model"),
+        # Local development (running from project root)
+        os.path.join(os.getcwd(), "model"),
+        # Azure App Service (deployed to wwwroot)
+        "/home/site/wwwroot/model",
+        # Azure alternative
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "model"),
+    ]
+    
+    for path in possible_paths:
+        if os.path.exists(path) and os.path.isfile(os.path.join(path, 'cogaly_xgb_v1.pkl')):
+            print(f"Found model directory at: {path}")
+            return path
+    
+    print(f"Model directory not found. Tried: {possible_paths}")
+    return possible_paths[0]  # Return first as fallback
+
+MODEL_DIR = get_model_dir()
+
+LOAD_ERROR = None
 
 def load_artifacts():
     """Load all model artifacts"""
+    global LOAD_ERROR
     try:
+        print(f"Loading models from: {MODEL_DIR}")
+        
         with open(os.path.join(MODEL_DIR, 'cogaly_xgb_v1.pkl'), 'rb') as f:
             model = pickle.load(f)
+        print("[OK] Model loaded")
         
         with open(os.path.join(MODEL_DIR, 'cogaly_scaler_v1.pkl'), 'rb') as f:
             scaler = pickle.load(f)
+        print("[OK] Scaler loaded")
         
         with open(os.path.join(MODEL_DIR, 'cogaly_feature_columns_v1.pkl'), 'rb') as f:
             features = pickle.load(f)
+        print(f"[OK] Features loaded: {len(features)} features")
         
         with open(os.path.join(MODEL_DIR, 'cogaly_shap_explainer_v1.pkl'), 'rb') as f:
             explainer = pickle.load(f)
+        print("[OK] SHAP explainer loaded")
         
         with open(os.path.join(MODEL_DIR, 'cogaly_metrics_v1.pkl'), 'rb') as f:
             metrics = pickle.load(f)
+        print("[OK] Metrics loaded")
         
         return model, scaler, features, explainer, metrics
     except Exception as e:
-        print(f"Error loading model artifacts: {e}")
+        import traceback
+        LOAD_ERROR = f"{str(e)}\n{traceback.format_exc()}"
+        print(f"[ERROR] Error loading model artifacts: {LOAD_ERROR}")
         return None, None, None, None, None
 
 # Load models at startup
@@ -124,6 +157,7 @@ class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
     model_accuracy: Optional[float]
+    error_details: Optional[str] = None
 
 # ============================================================================
 # API Endpoints
@@ -140,8 +174,37 @@ async def health_check():
     return HealthResponse(
         status="healthy" if model is not None else "error",
         model_loaded=model is not None,
-        model_accuracy=metrics.get('accuracy') if metrics else None
+        model_accuracy=metrics.get('accuracy') if metrics else None,
+        error_details=LOAD_ERROR
     )
+
+@app.get("/debug-files")
+async def debug_files():
+    """Debug endpoint to list files"""
+    try:
+        cwd = os.getcwd()
+        files_cwd = os.listdir(cwd)
+        
+        files_root = []
+        if os.path.exists("/home/site/wwwroot"):
+            files_root = os.listdir("/home/site/wwwroot")
+            
+        files_model_dir = []
+        if os.path.exists(MODEL_DIR):
+            files_model_dir = os.listdir(MODEL_DIR)
+            
+        return {
+            "cwd": cwd,
+            "files_cwd": files_cwd,
+            "MODEL_DIR": MODEL_DIR,
+            "files_model_dir": files_model_dir,
+            "files_root": files_root,
+            "__file__": __file__,
+            "files_app_dir": os.listdir(os.path.dirname(__file__)),
+            "load_error": LOAD_ERROR
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/features")
 async def get_features():
